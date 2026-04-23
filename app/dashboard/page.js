@@ -18,6 +18,7 @@ export default function DashboardPage() {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, listingId: null });
 
   useEffect(() => {
     if (session?.user?.role === "owner") {
@@ -75,10 +76,13 @@ export default function DashboardPage() {
     }
   };
 
-  const deleteListing = async (listingId) => {
-    if (!confirm("Are you sure you want to delete this listing?")) return;
+  const executeDelete = async () => {
+    const listingId = deleteModal.listingId;
+    if (!listingId) return;
 
     setActionLoading(listingId);
+    setDeleteModal({ isOpen: false, listingId: null });
+
     try {
       const res = await fetch(`/api/listings/${listingId}`, {
         method: "DELETE",
@@ -261,8 +265,19 @@ export default function DashboardPage() {
                         View
                       </Link>
 
+                      <Link
+                        href={`/listings/${listing._id}/edit`}
+                        className="px-3 py-1.5 rounded-lg text-xs font-medium no-underline transition-colors"
+                        style={{
+                          background: "var(--surface-hover)",
+                          color: "var(--text-secondary)",
+                        }}
+                      >
+                        Edit
+                      </Link>
+
                       <button
-                        onClick={() => deleteListing(listing._id)}
+                        onClick={() => setDeleteModal({ isOpen: true, listingId: listing._id })}
                         disabled={actionLoading === listing._id}
                         className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
                         style={{
@@ -281,6 +296,35 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteModal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }}>
+          <div className="glass card max-w-sm w-full p-6 animate-scale-in" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+            <div className="text-4xl mb-4 text-center">🗑️</div>
+            <h3 className="text-lg font-bold text-center mb-2" style={{ color: "var(--text-primary)" }}>Delete Listing?</h3>
+            <p className="text-sm text-center mb-6" style={{ color: "var(--text-secondary)" }}>
+              This action cannot be undone. The listing will be permanently removed.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteModal({ isOpen: false, listingId: null })}
+                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                style={{ background: "var(--surface-hover)", color: "var(--text-secondary)" }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={executeDelete}
+                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                style={{ background: "#FF3B30", color: "white" }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

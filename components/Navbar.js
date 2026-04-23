@@ -47,16 +47,28 @@ export default function Navbar() {
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-1">
-          <NavLink href="/" active={isActive("/")}>
-            Home
-          </NavLink>
-          <NavLink href="/listings" active={isActive("/listings")}>
-            Browse
-          </NavLink>
-          {session?.user?.role === "owner" && (
-            <NavLink href="/dashboard" active={isActive("/dashboard")}>
-              My Listings
+          {!session ? (
+            <NavLink href="/listings" active={isActive("/listings")}>
+              Browse Basa
             </NavLink>
+          ) : session.user.role === "owner" ? (
+            <>
+              <NavLink href="/dashboard" active={isActive("/dashboard")}>
+                My Dashboard
+              </NavLink>
+              <NavLink href="/listings/create" active={isActive("/listings/create")}>
+                Post New Listing
+              </NavLink>
+            </>
+          ) : (
+            <>
+              <NavLink href="/listings" active={isActive("/listings")}>
+                Feed
+              </NavLink>
+              <NavLink href="/saved" active={isActive("/saved")}>
+                Saved/Favorites
+              </NavLink>
+            </>
           )}
         </div>
 
@@ -73,7 +85,7 @@ export default function Navbar() {
                   style={{ padding: "8px 16px", fontSize: "0.85rem" }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                  Post Ad
+                  Post New Listing
                 </Link>
               )}
               <button
@@ -101,14 +113,14 @@ export default function Navbar() {
                 className="btn-secondary"
                 style={{ padding: "8px 16px", fontSize: "0.85rem" }}
               >
-                Log In
+                Login
               </Link>
               <Link
-                href="/register"
+                href="/login?callbackUrl=/listings/create"
                 className="btn-primary"
                 style={{ padding: "8px 16px", fontSize: "0.85rem" }}
               >
-                Sign Up
+                Post To-Let
               </Link>
             </div>
           )}
@@ -173,19 +185,22 @@ export default function Navbar() {
               </div>
 
               <div className="py-2">
-                <MenuLink href="/" onClick={() => setMenuOpen(false)}>
-                  🏠 Home
-                </MenuLink>
-                <MenuLink href="/listings" onClick={() => setMenuOpen(false)}>
-                  🔍 Browse Listings
-                </MenuLink>
-                {session.user.role === "owner" && (
+                {session.user.role === "owner" ? (
                   <>
                     <MenuLink href="/dashboard" onClick={() => setMenuOpen(false)}>
-                      📊 My Listings
+                      📊 My Dashboard
                     </MenuLink>
                     <MenuLink href="/listings/create" onClick={() => setMenuOpen(false)}>
-                      ➕ Post New Ad
+                      ➕ Post New Listing
+                    </MenuLink>
+                  </>
+                ) : (
+                  <>
+                    <MenuLink href="/listings" onClick={() => setMenuOpen(false)}>
+                      🔍 Feed
+                    </MenuLink>
+                    <MenuLink href="/saved" onClick={() => setMenuOpen(false)}>
+                      ❤️ Saved/Favorites
                     </MenuLink>
                   </>
                 )}
@@ -207,17 +222,14 @@ export default function Navbar() {
             </>
           ) : (
             <div className="py-2 md:hidden">
-              <MenuLink href="/" onClick={() => setMenuOpen(false)}>
-                🏠 Home
-              </MenuLink>
               <MenuLink href="/listings" onClick={() => setMenuOpen(false)}>
-                🔍 Browse Listings
+                🔍 Browse Basa
               </MenuLink>
               <MenuLink href="/login" onClick={() => setMenuOpen(false)}>
-                🔐 Log In
+                🔐 Login
               </MenuLink>
-              <MenuLink href="/register" onClick={() => setMenuOpen(false)}>
-                ✨ Sign Up
+              <MenuLink href="/login?callbackUrl=/listings/create" onClick={() => setMenuOpen(false)}>
+                ✨ Post To-Let
               </MenuLink>
             </div>
           )}

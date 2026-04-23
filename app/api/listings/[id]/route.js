@@ -154,3 +154,5 @@ export async function DELETE(request, { params }) {
     );
   }
 }
+
+export { PUT as PATCH };
